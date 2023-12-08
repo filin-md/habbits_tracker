@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'coreapi',
+    'drf_yasg',
 
     'main',
 
