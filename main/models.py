@@ -25,4 +25,5 @@ class Habit(models.Model):
     length = models.PositiveIntegerField(verbose_name='время выполнения в секундах')
     is_public = models.BooleanField(verbose_name='публичная или приватная')
     owner = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='владелец привычки')
+    last_sent_date = models.TimeField(verbose_name='Дата последней отправки напоминания')
 
