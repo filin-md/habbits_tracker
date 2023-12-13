@@ -13,12 +13,23 @@ def habit_notification():
     habits = Habit.objects.filter(time__gte=now, time__lte=now + timedelta(minutes=30))
     for habit in habits:
             # Рассчитываем количество дней с момента последней отправки
-            days_since_last_sent = (now.date() - habit.last_sent_date).days if habit.last_sent_date else 0
+            days_since_last_sent = (now.date() - habit.last_sent_date).days if habit.last_sent_date else (now.date() - habit.created_at).days
+            message = f"Нужно выполнить {habit.action} в {habit.place} в {habit.time}"
+
             if days_since_last_sent >= 1:
-                current_week_habit_count = habit.owner.habit_set.filter(period__gt=0).count()
-                if current_week_habit_count < habit.period:
-                    message = f"Нужно выполнить {habit.action} в {habit.place} в {habit.time}"
+
+                if days_since_last_sent >= 7:
                     send_telegram_msg(habit.owner.tg_username, message)
-                    # Обновляем последнюю дату отправки на сегодняшнюю
                     habit.last_sent_date = now.date()
                     habit.save()
+                    return
+                if days_since_last_sent >= 30:
+                    send_telegram_msg(habit.owner.tg_username, message)
+                    habit.last_sent_date = now.date()
+                    habit.save()
+                    return
+
+                send_telegram_msg(habit.owner.tg_username, message)
+                habit.last_sent_date = now.date()
+                habit.save()
+                return
